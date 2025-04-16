@@ -1,141 +1,173 @@
-#include <iostream>
-#include <vector>
-
+#include<iostream>
 using namespace std;
 
-class Heap {
-private:
-    vector<int> heap;
+//insertion, deletion, heapify, build heap, heapsort
 
-    // Used for insertion
-    void heapifyUp(int index) {
-        int parent = (index - 1) / 2;
-        while (index > 0 && heap[index] > heap[parent]) {
-            swap(heap[index], heap[parent]);
-            index = parent;
-            parent = (index - 1) / 2;
-        }
-    }
-
-    // Used for deletion
-    void heapifyDown(int index) {
-        int left = 2 * index + 1;
-        int right = 2 * index + 2;
-        int largest = index;
-
-        if (left < heap.size() && heap[left] > heap[largest]) largest = left;
-        if (right < heap.size() && heap[right] > heap[largest]) largest = right;
-
-        if (largest != index) {
-            swap(heap[index], heap[largest]);
-            heapifyDown(largest);
-        }
-    }
-
+class heap
+{
 public:
-    
-    void insert(int val) {
-        heap.push_back(val);
-        heapifyUp(heap.size() - 1);
-    }
+int arr[100];
+int size=0;
 
-    
-    void deleteMax() {
-        if (heap.empty()) {
-            //cout << "Heap is empty!" << endl;
-            return;
-        }
+heap()   //constructor
+{
+arr[0]= -1;
+size= 0;
+}
 
-        heap[0] = heap.back();
-        heap.pop_back();
-        heapifyDown(0);
-    }
+void insert (int val)   //INSERTION
+{
+size= size+1;
+int index= size;
+arr[index]= val;
 
-    
-    int getMax() {
-        if (heap.empty()) return -1;
-        return heap[0];
-    }
+while(index>1)
+{
+int parent= index/2;
 
-   
-    void printHeap() {
-        for (int val : heap) {
-            cout << val << " ";
-        }
-        cout << endl;
-    }
+if(arr[parent]<arr[index])
+{
+swap(arr[parent], arr[index]);
+index=parent;
+}
+else
+return;
+}
+}
 
-    
-    vector<int> getHeap() {
-        return heap;
-    }
+void print()
+{
+for(int i=1; i<=size; i++)
+{
+cout<<arr[i]<< " ";
+}
+cout<<endl;
+}
+
+void deleteheap()    //DELETION
+{
+if( size==0)
+{
+cout<<"nothing to delete"<<endl;
+return;
+}
+
+//step1
+arr[1]=arr[size];
+
+//step2
+size--;
+
+//step3  --> compare with children so tht root reaches correct position
+int i=1;
+while(i<size)
+{
+int leftI= 2*i;
+int rightI= 2*i+1;
+
+if(leftI<size && arr[i]<arr[leftI])
+{
+swap(arr[i],arr[leftI]);
+i=leftI;
+}
+
+else if (rightI<size && arr[i]<arr[rightI])
+{
+swap(arr[i],arr[rightI]);
+i=rightI;
+}
+
+else
+return;
+}
+}
+
 };
 
+void heapify(int arr[], int n, int i)    //HEAPIFY
+{
+int largest=i;
+int left= 2*i;
+int right= 2*i+1;
 
-void heapSort(vector<int>& arr) {
+if(left<=n && arr[largest]<arr[left])
+{
+largest=left;
+}
 
-    int n = arr.size();
+if(right<=n   && arr[largest]<arr[right])
+{
+largest=right;
+}
 
-    for (int i = n / 2 - 1; i >= 0; i--) {
-        Heap tempHeap;
-        tempHeap.insert(arr[i]);
-    }
+if(largest!=i) //means it is updated, so swap
+{
+swap(arr[largest], arr[i]);
+heapify(arr, n, largest); //check for further correct positions
+}
+}
 
-    for (int i = n - 1; i >= 0; i--) {
-        swap(arr[0], arr[i]);
-        int heapSize = i;
-        Heap tempHeap;
-        tempHeap.deleteMax();
-    }
+void heapsort(int arr[], int n)  //HEAPSORT
+{
+int temp=n;
+
+while(temp>1)
+{
+//step1: swap
+swap(arr[temp], arr[1]);
+
+//step2
+temp--;
+
+//step3
+heapify(arr, temp,1);
+}
+
+}
+
+int main()
+{
+heap h;
+
+h.insert(50);
+h.insert(55);
+h.insert(53);
+h.insert(52);
+h.insert(54);
+
+h.print();
+
+h.deleteheap();
+h.print();
+
+int arr[6]={ -1, 54, 53, 55, 52, 50};
+int n=5;
+
+
+for(int i=n/2; i>0; i--)   //BUILD HEAP FUNCTION
+{
+heapify(arr, n, i);
 }
 
 
-int main() {
-    Heap heap;
-    
-    heap.insert(10);
-    heap.insert(20);
-    heap.insert(15);
-    heap.insert(30);
-    heap.insert(40);
-    heap.insert(69);
-    heap.insert(420);
-    heap.insert(37);
 
-    cout << " " << endl;
-    cout << "EXECUTING THEM COMMANDS COMRADE ====> " << endl;
-    cout << "heap.insert(10);" << endl;
-    cout << "heap.insert(20);" << endl;
-    cout << "heap.insert(15);" << endl;
-    cout << "heap.insert(30);" << endl;
-    cout << "heap.insert(40);" << endl;
-    cout << "heap.insert(69);" << endl;
-    cout << "heap.insert(420);" << endl;
-    cout << "heap.insert(37);" << endl;
-    cout << " " << endl;
+cout<<"Printing array again:"<<endl; 
+for(int i=1;i<=n;i++)
+{
+cout<<arr[i]<< " ";
+}
+cout<<endl;
 
 
-    cout << "Heap after Inserting them kids: ";
-    heap.printHeap();
+//heap sort
+heapsort(arr, n);
+cout<<"Printing sorted array:"<<endl;
+for(int i=1;i<=n;i++)
+{
+cout<<arr[i]<< " ";
+}
+cout<<endl;
 
-    cout << " " << endl;
-    cout << "Max element of that godamn heap: " << heap.getMax() << endl;
 
-    cout << " " << endl;
-    heap.deleteMax();
-    cout << "Heap after deleting that sucker max Element: ";
-    heap.printHeap();
-
-    cout << " " << endl;
-    vector<int> arr = {10, 20, 15, 30, 40, 69, 420, 37};
-    heapSort(arr);
-    cout << "yapping Sorted Array which was done using Heap Sort: ";
-    for (int num : arr) {
-        cout << num << " ";
-    }
-    cout << endl;
-    cout << " " << endl;
-    cout << " " << endl;
-
-    return 0;
+return 0;
 }
