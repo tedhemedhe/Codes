@@ -1,0 +1,43 @@
+% M-file: torque_speed_curve_updated.m
+% Plots the torque-speed characteristic for R2/2, R2, and 2*R2
+
+% Initialize motor parameters
+r1 = 0.641;      % Stator resistance (ohms)
+x1 = 1.106;      % Stator reactance (ohms)
+r2 = 0.332;      % Rotor resistance (ohms)
+x2 = 0.464;      % Rotor reactance (ohms)
+xm = 26.3;       % Magnetization branch reactance (ohms)
+v_phase = 460 / sqrt(3);  % Phase voltage (V)
+n_sync = 1800;   % Synchronous speed (rpm)
+w_sync = 188.5;  % Synchronous speed (rad/s)
+
+% Calculate Thevenin equivalent
+v_th = v_phase * (1j * xm) / (r1 + 1j * x1 + 1j * xm);
+z_th = (1j * xm) * (r1 + 1j * x1) / (r1 + 1j * x1 + 1j * xm);
+
+r_th = real(z_th);
+x_th = imag(z_th);
+
+% Slip vector
+s = linspace(0.001, 1, 1000);
+n = (1 - s) * n_sync;
+
+% Torque calculations for 0.5*R2, R2, 2*R2
+r2_vals = [0.5*r2, r2, 2*r2];
+torques = zeros(length(r2_vals), length(s));
+
+for k = 1:length(r2_vals)
+    r2k = r2_vals(k);
+    torques(k, :) = (3 * abs(v_th)^2 .* (r2k ./ s)) ./ ...
+        (w_sync * ((r_th + (r2k ./ s)).^2 + (x_th + x2).^2));
+end
+
+% Plotting
+plot(n, torques(1, :), 'g--', ... % 0.5*R2
+     n, torques(2, :), 'b-', ...  % R2
+     n, torques(3, :), 'r--');    % 2*R2
+xlabel('Speed (r/min)');
+ylabel('Torque (N·m)');
+title('Torque-Speed Characteristic for Different Rotor Resistances');
+legend('0.5 × R2', 'R2', '2 × R2');
+grid on;

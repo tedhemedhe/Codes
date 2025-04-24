@@ -1,0 +1,25 @@
+Bo=1; %Peak Value
+f=60;
+w=2*pi*f;
+t=(0:1/6000:1/60);
+Baa=sin(w*t)*(cos(0)+j*sin(0));
+Bbb=sin(w*t+2*pi/3)*(cos(2*pi/3)+j*sin(2*pi/3));
+Bcc=sin(w*t-2*pi/3)*(cos(2*pi/3)-j*sin(2*pi/3));
+Bnet=Baa+Bbb+Bcc;
+Bloop=(cos(w*t) - 1j*sin(w*t));
+
+circle=1.5*(cos(w*t)+j*sin(w*t));
+for ii=1:length(t)
+    plot(circle,'Color','k');
+    hold on;
+    %plot([0 real(Baa(ii))],[0 imag(Baa(ii))],'LineWidth',2);
+    %plot([0 real(Bbb(ii))],[0 imag(Bbb(ii))],'LineWidth',2);
+    %plot([0 real(Bcc(ii))],[0 imag(Bcc(ii))],'LineWidth',2);
+    plot([0 real(Bnet(ii))],[0 imag(Bnet(ii))],'LineWidth',3);
+    plot([0 real(Bloop(ii))],[0 imag(Bloop(ii))],'g','LineWidth',3);
+
+    axis square;
+    axis([-2 2 -2 2]);
+    drawnow;
+    hold off;
+end
